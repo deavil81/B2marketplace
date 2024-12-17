@@ -1,0 +1,55 @@
+/* Custom styles for the About page */
+.list-group-item {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    padding: 15px 20px;
+    font-weight: bold;
+    color: #333;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.list-group-item.active {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
+.list-group-item-action:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.img-fluid {
+    max-height: 300px;
+    object-fit: cover;
+}
+
+.text-center p {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+h2 {
+    color: #343a40;
+    margin-bottom: 1rem;
+}
+
+.container h1 {
+    color: #007bff;
+}
+
+.navbar-nav .dropdown-menu {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.dropdown-menu .dropdown-item {
+    color: #fff;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #007bff;
+    color: #fff;
+}

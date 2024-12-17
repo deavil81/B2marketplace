@@ -1,0 +1,22 @@
+.navbar-custom {
+    background-color: #007bff; /* Blue */
+    color: white;
+}
+
+.navbar-custom .navbar-nav .nav-link {
+    color: white;
+}
+
+.navbar-custom .navbar-brand {
+    color: white;
+}
+
+.btn-outline-light {
+    color: white;
+    border-color: white;
+}
+
+.btn-outline-light:hover {
+    color: #007bff;
+    background-color: white;
+}
