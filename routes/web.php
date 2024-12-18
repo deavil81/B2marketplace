@@ -9,6 +9,8 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProductReviewController;
 
 // Homepage route
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -74,9 +76,13 @@ Route::middleware('auth')->prefix('products')->name('products.')->group(function
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 });
 
+// Product review routes
+Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store'])->name('products.storeReview');
+
+
 // Dashboard and settings
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
     Route::get('/settings', [HomeController::class, 'settings'])->name('settings');
 });
 

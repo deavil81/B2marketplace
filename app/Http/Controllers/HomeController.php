@@ -116,6 +116,12 @@ class HomeController extends Controller
     
         return redirect()->route('profile.index')->with('success', 'Profile updated successfully.');
     }
+
+    public function dashboard()
+    {
+        return view('auth.dashboard'); 
+    }
+
      
         
     /**

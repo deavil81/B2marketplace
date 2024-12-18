@@ -6,26 +6,23 @@
         <!-- Product Images Carousel -->
         <div class="col-md-6">
             <?php if($product->images->isNotEmpty()): ?>
-                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <?php $__currentLoopData = $product->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <div class="carousel-item <?php echo e($key == 0 ? 'active' : ''); ?>">
-                                <img src="<?php echo e(asset('storage/' . $image->image_path)); ?>" class="d-block w-100" alt="<?php echo e($product->title); ?>">
-                                <div class="carousel-caption d-none d-md-block">
-                                    <p>Image <?php echo e($key + 1); ?> of <?php echo e($product->images->count()); ?></p>
-                                </div>
-                            </div>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <?php $__currentLoopData = $product->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="carousel-item <?php echo e($key == 0 ? 'active' : ''); ?>">
+                            <img src="<?php echo e(asset('storage/' . $image->image_path)); ?>" class="d-block w-100" alt="<?php echo e($product->title); ?>">
+                        </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
             <?php else: ?>
                 <img src="<?php echo e(asset('default-product.png')); ?>" class="d-block w-100" alt="<?php echo e($product->title); ?>">
             <?php endif; ?>
@@ -214,4 +211,4 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\online-marketplace\resources\views/products/show.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.navlayout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\online-marketplace\resources\views/products/show.blade.php ENDPATH**/ ?>

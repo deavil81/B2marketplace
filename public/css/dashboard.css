@@ -1,0 +1,17 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    margin-top: 20px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.card-title {
+    font-weight: bold;
+}
+
+.btn {
+    border-radius: 25px;
+}
