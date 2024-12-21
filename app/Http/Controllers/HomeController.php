@@ -20,7 +20,7 @@ class HomeController extends Controller
     /**
      * Display the home page with suggested products and categories.
      */
-    public function index() 
+    public function index()  
     { 
         $unreadNotifications = auth()->check() 
             ? Message::where('receiver_id', Auth::id())->where('read_at', null)->count() 
@@ -28,11 +28,12 @@ class HomeController extends Controller
         $messages = auth()->check() 
             ? Message::where('receiver_id', Auth::id())->get() 
             : collect(); 
-        $suggestedProducts = Product::inRandomOrder()->take(8)->get(); 
+        $products = Product::inRandomOrder()->take(8)->get(); // Changed variable name to $products
         $categories = Category::all(); 
-        
-        return view('messages.message', compact('suggestedProducts', 'categories', 'unreadNotifications', 'messages')); 
+
+        return view('index', compact('products', 'categories', 'unreadNotifications', 'messages')); 
     }
+
 
     /**
      * Display the about page.
@@ -62,17 +63,32 @@ class HomeController extends Controller
     public function profile()
     {
         $user = Auth::user();
+    
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'You must be logged in to access this page.');
+        }
+    
         $products = Product::where('user_id', $user->id)->get();
         $categories = Category::all();
-        return view('auth.profile', compact('user','products','categories'));
+    
+        return view('auth.profile', compact('user', 'products', 'categories'));
     }
+    
 
-    public function editProfile() 
-    { 
-        $user = Auth::user(); 
-        return view('auth.profile', compact('user'));
+    public function editProfile()
+    {
+        $user = Auth::user();
+    
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'You must be logged in to access this page.');
+        }
+    
+        $products = Product::where('user_id', $user->id)->get();
+        $categories = Category::all();
+    
+        return view('auth.profile', compact('user', 'products', 'categories'));
     }
-
+    
     /**
      * Update the user's profile.
      */
@@ -116,6 +132,12 @@ class HomeController extends Controller
     
         return redirect()->route('profile.index')->with('success', 'Profile updated successfully.');
     }
+
+    public function dashboard()
+    {
+        return view('auth.dashboard'); 
+    }
+
      
         
     /**
