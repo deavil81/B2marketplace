@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - Online Marketplace</title>
     <link rel="stylesheet" href="{{ asset('css/indexstyle.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/reviews.css') }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -76,7 +77,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="text-center mt-4">
+    <footer class="mt-4 text-center">
         <p>&copy; {{ date('Y') }} Online Marketplace</p>
     </footer>
 

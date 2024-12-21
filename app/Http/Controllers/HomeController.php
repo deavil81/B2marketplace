@@ -31,6 +31,7 @@ class HomeController extends Controller
         $suggestedProducts = Product::inRandomOrder()->take(8)->get(); 
         $categories = Category::all(); 
         
+        
         return view('messages.message', compact('suggestedProducts', 'categories', 'unreadNotifications', 'messages')); 
     }
 

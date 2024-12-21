@@ -1,0 +1,81 @@
+/* General Container */
+.container {
+    background-color: #fdfdfd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Review Form */
+.review-form {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h3.h4 {
+    font-weight: bold;
+    color: #444;
+}
+
+/* Star Ratings */
+.rating input {
+    display: none;
+}
+
+.rating label {
+    color: #ccc;
+    cursor: pointer;
+    float: right;
+}
+
+.rating input:checked ~ label,
+.rating label:hover,
+.rating label:hover ~ label {
+    color: #ffbc0b;
+}
+
+.back-stars, .front-stars {
+    position: relative;
+    display: inline-block;
+    color: #ddd;
+    font-size: 1.2rem;
+}
+
+.front-stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: gold; /* or the desired star color */
+}
+
+/* Review Display */
+.overall-rating h1 {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: bold;
+    color: #444;
+}
+
+.rating-group {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.rating-group strong {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.rating-group p {
+    color: #555;
+    margin-top: 10px;
+    line-height: 1.6;
+}

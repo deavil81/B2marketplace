@@ -38,8 +38,6 @@
             <p class="product-price"><strong>Price:</strong> ₹{{ $product->price }}</p>
             <ul class="product-details">
                 <li><strong>Category:</strong> {{ $product->category->name ?? 'N/A' }}</li>
-                <li><strong>Material:</strong> Cotton</li>
-                <li><strong>Size:</strong> Medium</li>
             </ul>
         </div>
     </div>
@@ -48,10 +46,10 @@
     <div class="mt-4">
         <h3>Product Reviews</h3>
         @forelse ($product->reviews as $review)
-            <div class="card mb-3">
+            <div class="mb-3 card">
                 <div class="card-body">
                     <h5 class="card-title">
-                        {{ $review->user->name }} - <span class="text-warning">{{ $review->rating }} / 5</span>
+                        {{ $review->user->name ?? 'Anonymous' }} - <span class="text-warning">{{ $review->rating }} / 5</span>
                     </h5>
                     <p><small>Reviewed on {{ $review->created_at->format('M d, Y') }}</small></p>
                     <p class="card-text">{{ $review->review }}</p>
@@ -69,12 +67,12 @@
             @csrf
             <div class="mb-3">
                 <label for="rating" class="form-label">Rating</label>
-                <div class="rating" style="width: 10rem">
-                    <input id="rating-5" type="radio" name="rating" value="5"/><label for="rating-5"><i class="fas fa-3x fa-star"></i></label>
-                    <input id="rating-4" type="radio" name="rating" value="4"  /><label for="rating-4"><i class="fas fa-3x fa-star"></i></label>
-                    <input id="rating-3" type="radio" name="rating" value="3"/><label for="rating-3"><i class="fas fa-3x fa-star"></i></label>
-                    <input id="rating-2" type="radio" name="rating" value="2"/><label for="rating-2"><i class="fas fa-3x fa-star"></i></label>
-                    <input id="rating-1" type="radio" name="rating" value="1"/><label for="rating-1"><i class="fas fa-3x fa-star"></i></label>
+                <div class="rating">
+                    <input id="rating-5" type="radio" name="rating" value="5"/><label for="rating-5"><i class="fas fa-star"></i></label>
+                    <input id="rating-4" type="radio" name="rating" value="4"/><label for="rating-4"><i class="fas fa-star"></i></label>
+                    <input id="rating-3" type="radio" name="rating" value="3"/><label for="rating-3"><i class="fas fa-star"></i></label>
+                    <input id="rating-2" type="radio" name="rating" value="2"/><label for="rating-2"><i class="fas fa-star"></i></label>
+                    <input id="rating-1" type="radio" name="rating" value="1"/><label for="rating-1"><i class="fas fa-star"></i></label>
                 </div>                
                 <input type="hidden" name="rating" id="rating" value="0">
                 <p id="rating-display" class="mt-2">Rating: 0</p>
@@ -117,96 +115,40 @@
 @section('styles')
 <style>
     .rating {
+        display: flex;
         direction: rtl;
         unicode-bidi: bidi-override;
-        color: #ddd; /* Personal choice */
-        font-size: 8px;
-        margin-left: -15px;
     }
     .rating input {
         display: none;
     }
-    .rating label:hover,
-    .rating label:hover ~ label,
-    .rating input:checked + label,
-    .rating input:checked + label ~ label {
-        color: #ffc107; /* Personal color choice. Lifted from Bootstrap 4 */
-        font-size: 8px;
+    .rating label {
+        font-size: 2rem;
+        color: #ccc;
+        cursor: pointer;
     }
-
-
-    .front-stars, .back-stars, .star-rating {
-    display: flex;
-  }
-  
-  .star-rating {
-    align-items: left;
-    font-size: 1.5em;
-    justify-content: left;
-    margin-left: -5px;
-  }
-  
-  .back-stars {
-    color: #CCC;
-    position: relative;
-  }
-  
-  .front-stars {
-    color: #FFBC0B;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    transition: all 0.5s;
-  }
-
-  
-  .percent {
-    color: #bb5252;
-    font-size: 1.5em;
-  }
+    .rating input:checked ~ label,
+    .rating label:hover,
+    .rating label:hover ~ label {
+        color: #ffc107;
+    }
 </style>
 @endsection
 
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const stars = document.querySelectorAll('.star-rating .star'); // Match `.star-rating` class
+    const stars = document.querySelectorAll('.rating label');
     const ratingInput = document.getElementById('rating');
     const ratingDisplay = document.getElementById('rating-display');
 
-    let selectedRating = 0;
-
     stars.forEach((star, index) => {
-        star.addEventListener('mouseover', () => {
-            resetStars();
-            highlightStars(index);
-        });
-
-        star.addEventListener('mouseleave', () => {
-            resetStars();
-            if (selectedRating > 0) {
-                highlightStars(selectedRating - 1);
-            }
-        });
-
         star.addEventListener('click', () => {
-            selectedRating = index + 1;
-            ratingInput.value = selectedRating;
-            ratingDisplay.textContent = `Rating: ${selectedRating}`;
-            resetStars();
-            highlightStars(index);
+            const rating = 5 - index;
+            ratingInput.value = rating;
+            ratingDisplay.textContent = `Rating: ${rating}`;
         });
     });
-
-    function highlightStars(index) {
-        for (let i = 0; i <= index; i++) {
-            stars[i].classList.add('hovered');
-        }
-    }
-
-    function resetStars() {
-        stars.forEach(star => star.classList.remove('hovered', 'selected'));
-    }
 });
 </script>
 @endsection

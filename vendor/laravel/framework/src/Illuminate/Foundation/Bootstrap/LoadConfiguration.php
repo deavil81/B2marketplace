@@ -91,35 +91,26 @@ class LoadConfiguration
      * @param  array  $base
      * @return array
      */
-protected function loadConfigurationFile(RepositoryContract $repository, $name, $path, array $base)
-{
-    $config = (fn () => require $path)();
+    protected function loadConfigurationFile(RepositoryContract $repository, $name, $path, array $base)
+    {
+        $config = (fn () => require $path)();
 
-    if (!is_array($config)) {
-        throw new \Exception("Config file at {$path} does not return an array.");
-    }
+        if (isset($base[$name])) {
+            $config = array_merge($base[$name], $config);
 
-    if (isset($base[$name])) {
-        if (!is_array($base[$name])) {
-            throw new \Exception("Base config for {$name} is not an array.");
-        }
-
-        $config = array_merge($base[$name], $config);
-
-        foreach ($this->mergeableOptions($name) as $option) {
-            if (isset($config[$option])) {
-                $config[$option] = array_merge($base[$name][$option], $config[$option]);
+            foreach ($this->mergeableOptions($name) as $option) {
+                if (isset($config[$option])) {
+                    $config[$option] = array_merge($base[$name][$option], $config[$option]);
+                }
             }
+
+            unset($base[$name]);
         }
 
-        unset($base[$name]);
+        $repository->set($name, $config);
+
+        return $base;
     }
-
-    $repository->set($name, $config);
-
-    return $base;
-}
-
 
     /**
      * Get the options within the configuration file that should be merged again.

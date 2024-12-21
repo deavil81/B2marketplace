@@ -10,7 +10,6 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProductReviewController;
 
 // Homepage route
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -19,7 +18,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
 Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
 Route::get('/messages/{id}', [MessageController::class, 'show']);
-
 
 // Authentication routes (Breeze and custom)
 require __DIR__.'/auth.php'; // Includes registration, login, and password reset routes
@@ -64,21 +62,15 @@ Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categ
 
 // Product routes
 Route::middleware('auth')->prefix('products')->name('products.')->group(function () {
-    Route::get('/', [ProductController::class, 'index'])->name('index');
-    Route::post('/', [ProductController::class, 'store'])->name('store');
-    Route::get('{product}', [ProductController::class, 'show'])->name('show');
-    Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
-    Route::get('{product}/edit', [ProductController::class, 'edit'])->name('edit');
-    Route::put('{product}', [ProductController::class, 'update'])->name('update');
-    Route::delete('{product}', [ProductController::class, 'destroy'])->name('destroy');
-    Route::resource('products', ProductController::class)->middleware('auth');
-    Route::get('/add', [ProductController::class, 'create'])->name('add');
-    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/', [ProductController::class, 'index'])->name('index'); // List products
+    Route::get('/add', [ProductController::class, 'create'])->name('add'); // Add product form
+    Route::post('/', [ProductController::class, 'store'])->name('store'); // Store product
+    Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit'); // Edit product form
+    Route::put('/{product}', [ProductController::class, 'update'])->name('update'); // Update product
+    Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy'); // Delete product
+    Route::get('/{id}', [ProductController::class, 'show'])->name('show'); // Show product
+    Route::post('/{id}/review', [ProductController::class, 'storeReview'])->name('storeReview'); // Store review
 });
-
-// Product review routes
-Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store'])->name('products.storeReview');
-
 
 // Dashboard and settings
 Route::middleware('auth')->group(function () {

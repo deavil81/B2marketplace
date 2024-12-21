@@ -9,6 +9,7 @@ use App\Models\ProductImage;
 use App\Models\ProductReview;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -109,32 +110,57 @@ class ProductController extends Controller
     
     public function show($id)
     {
-        $product = Product::with(['images', 'reviews.user'])->findOrFail($id);
+        $product = Product::with(['reviews.user'])->findOrFail($id);
         $relatedProducts = Product::where('category_id', $product->category_id)
-            ->where('id', '!=', $product->id)
-            ->limit(4)
-            ->get();
+                                  ->where('id', '!=', $id)
+                                  ->limit(4)
+                                  ->get();
+    
+        // Log the product and related products
+        \Log::info('Product Data:', $product->toArray());
+        \Log::info('Related Products:', $relatedProducts->toArray());
     
         return view('products.show', compact('product', 'relatedProducts'));
     }
     
+    public function showSuggestions()
+    {
+        $suggestedProducts = Product::where('category_id', $someCategoryId)->get();
+    
+        // Log the retrieved products
+        \Log::info('Suggested Products:', $suggestedProducts->toArray());
+    
+        return view('products.suggestions', compact('suggestedProducts'));
+    }
+            
+
     public function storeReview(Request $request, $id)
     {
-        $request->validate([
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'You must be logged in to submit a review.');
+        }
+    
+        $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'review' => 'required|string',
         ]);
     
-        ProductReview::create([
-            'product_id' => $id,
-            'user_id' => auth()->id(),
-            'rating' => $request->rating,
-            'review' => $request->review,
-        ]);
+        try {
+            ProductReview::create([
+                'product_id' => $id,
+                'user_id' => auth()->id(),
+                'rating' => $validated['rating'],
+                'review' => $validated['review'],
+            ]);
+            \Log::info('Review successfully stored.', ['data' => $validated]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to store review.', ['error' => $e->getMessage()]);
+            return redirect()->route('products.show', $id)->with('error', 'Failed to submit review.');
+        }
     
         return redirect()->route('products.show', $id)->with('success', 'Review submitted successfully!');
     }
-        
+                
     /**
      * Update the specified product in storage.
      */
