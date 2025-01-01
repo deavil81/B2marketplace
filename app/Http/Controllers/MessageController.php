@@ -17,7 +17,7 @@ class MessageController extends Controller
     public function index(Request $request)
     {
         $userId = auth()->id();
-    
+        
         // Fetch distinct conversations
         $conversations = Message::where('sender_id', $userId)
             ->orWhere('receiver_id', $userId)
@@ -25,12 +25,12 @@ class MessageController extends Controller
             ->distinct()
             ->with(['sender', 'receiver'])
             ->get();
-    
+        
         // Get the active conversation (if any)
         $activeUser = $request->query('user_id') 
             ? User::find($request->query('user_id')) 
             : null;
-    
+        
         // Fetch messages if a user is selected
         $messages = $activeUser
             ? Message::where(function ($query) use ($userId, $activeUser) {
@@ -40,8 +40,12 @@ class MessageController extends Controller
               })->orderBy('created_at', 'asc')->get()
             : null;
     
-        return view('messages.index', compact('conversations', 'activeUser', 'messages'));
+        // Get all users except the current authenticated user
+        $users = User::where('id', '!=', $userId)->get();
+        
+        return view('messages.index', compact('conversations', 'activeUser', 'messages', 'users'));
     }
+    
                 
 
     /**
@@ -80,16 +84,16 @@ class MessageController extends Controller
             'receiver_id' => 'required|exists:users,id',
             'content' => 'required|string|max:1000',
         ]);
-
+    
         $senderId = auth()->id();
         $receiverId = $request->receiver_id;
-
+    
         // Create or find the conversation between the sender and receiver
         $conversation = Conversation::firstOrCreate([
             'user_one' => min($senderId, $receiverId),
             'user_two' => max($senderId, $receiverId),
         ]);
-
+    
         // Store the initial message
         Message::create([
             'conversation_id' => $conversation->id,
@@ -97,9 +101,9 @@ class MessageController extends Controller
             'receiver_id' => $receiverId,
             'content' => $request->content,
         ]);
-
+    
         return redirect()->route('messages.index', ['user_id' => $receiverId]);
     }
-
+    
 
 }

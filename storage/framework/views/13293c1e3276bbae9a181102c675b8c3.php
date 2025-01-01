@@ -13,7 +13,10 @@
                     <li class="list-group-item <?php echo e(isset($activeUser) && $conversation->id === $activeUser->id ? 'active' : ''); ?>">
                         <a href="<?php echo e(route('messages.index', ['user_id' => $conversation->id])); ?>" class="text-decoration-none text-dark">
                             <strong><?php echo e($conversation->name); ?></strong><br>
-                            <small class="text-muted"><?php echo e($conversation->lastMessage ?? 'No messages yet'); ?></small>
+                            <small class="text-muted">
+                                <?php echo e($conversation->lastMessage ?? 'No messages yet'); ?>
+
+                            </small>
                         </a>
                     </li>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -33,25 +36,11 @@
                                 <?php echo e($message->content); ?>
 
                             </p>
-                            <small class="text-muted"><?php echo e($message->created_at->format('d M Y, h:i A')); ?></small>
-                        </div>
-                        <div class="col-md-8 text-center">
-                            <h5>Start a Conversation</h5>
-                            <form action="<?php echo e(route('messages.startConversation')); ?>" method="POST">
-                                <?php echo csrf_field(); ?>
-                                <div class="input-group mb-3">
-                                    <select name="receiver_id" class="form-control" required>
-                                        <option value="" disabled selected>Select a user...</option>
-                                        <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($user->id); ?>"><?php echo e($user->name); ?></option>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </select>
-                                    <textarea name="content" class="form-control" rows="1" placeholder="Type a message..." required></textarea>
-                                    <button type="submit" class="btn btn-primary">Send</button>
-                                </div>
-                            </form>
-                        </div>
+                            <small class="text-muted">
+                                <?php echo e($message->created_at->format('d M Y, h:i A')); ?>
 
+                            </small>
+                        </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <p>No messages in this conversation yet.</p>
                     <?php endif; ?>
@@ -69,6 +58,24 @@
             <?php else: ?>
                 <p class="text-center">Select a conversation to start chatting.</p>
             <?php endif; ?>
+        </div>
+
+        <!-- Start a New Conversation -->
+        <div class="mt-4">
+            <h5>Start a Conversation</h5>
+            <form action="<?php echo e(route('messages.startConversation')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
+                <div class="input-group mb-3">
+                    <select name="receiver_id" class="form-control" required>
+                        <option value="" disabled selected>Select a user...</option>
+                        <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($user->id); ?>"><?php echo e($user->name); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </select>
+                    <textarea name="content" class="form-control" rows="1" placeholder="Type a message..." required></textarea>
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

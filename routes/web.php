@@ -18,6 +18,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Messages Routes
 Route::get('/messages', [MessageController::class, 'index'])->name('messages.index'); // Messaging interface
 Route::post('/messages', [MessageController::class, 'store'])->name('messages.store'); // Store a new message
+Route::post('/messages/start', [MessageController::class, 'startConversationAndSendMessage'])->name('messages.startConversation');
 
 // Authentication routes (Breeze and custom)
 require __DIR__.'/auth.php'; // Includes registration, login, and password reset routes
