@@ -32,6 +32,28 @@
                     </li>
                     <?php if(auth()->guard()->check()): ?>
                         <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                <?php if(isset($unreadNotifications) && $unreadNotifications > 0): ?>
+                                    <span class="badge badge-danger"><?php echo e($unreadNotifications); ?></span>
+                                <?php endif; ?>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notificationDropdown">
+                                <?php if(isset($messages) && $messages->isNotEmpty()): ?>
+                                    <?php $__currentLoopData = $messages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <a class="dropdown-item" href="<?php echo e(route('messages.index', ['user' => $message->sender_id])); ?>">
+                                            <?php echo e(Str::limit($message->content, 50)); ?>
+
+                                        </a>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php else: ?>
+                                    <span class="dropdown-item">No new notifications</span>
+                                <?php endif; ?>
+                            </div>
+                        </li>
+
+
+                        <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <?php echo e(Auth::user()->name); ?>
 

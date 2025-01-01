@@ -14,6 +14,46 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: #f8f9fa;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1050;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            padding: 10px 15px;
+            background: #007bff;
+            color: #fff;
+        }
+
+        .message-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .message-item:hover {
+            background: #f1f1f1;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -112,10 +152,15 @@
         function toggleSidebar() {
             var sidebar = document.getElementById("sidebar");
             sidebar.classList.toggle("active");
+
+            if (sidebar.classList.contains("active")) {
+                sidebar.style.right = "0";
+            } else {
+                sidebar.style.right = "-300px";
+            }
         }
 
         function viewMessage(messageId) {
-            // Fetch and display the message content
             $.ajax({
                 url: `/messages/${messageId}`,
                 type: 'GET',

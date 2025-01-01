@@ -1,9 +1,11 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// Migration for creating 'products' table
 class CreateProductsTable extends Migration
 {
     public function up()
@@ -25,3 +27,4 @@ class CreateProductsTable extends Migration
         Schema::dropIfExists('products');
     }
 }
+

@@ -10,14 +10,14 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 
 // Homepage route
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// massage route
-Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
-Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
-Route::get('/messages/{id}', [MessageController::class, 'show']);
+// Messages Routes
+Route::get('/messages', [MessageController::class, 'index'])->name('messages.index'); // Messaging interface
+Route::post('/messages', [MessageController::class, 'store'])->name('messages.store'); // Store a new message
 
 // Authentication routes (Breeze and custom)
 require __DIR__.'/auth.php'; // Includes registration, login, and password reset routes
@@ -54,8 +54,11 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
     Route::get('/edit', [HomeController::class, 'editProfile'])->name('edit'); // Edit profile form
     Route::put('/{id}', [HomeController::class, 'updateProfile'])->name('update'); // Update profile
     Route::post('/add-product', [HomeController::class, 'addProduct'])->name('addProduct'); // Add product
+    Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
+
 });
 
+Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
 
 // Category routes
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categories.show');

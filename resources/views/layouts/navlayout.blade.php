@@ -32,6 +32,27 @@
                     </li>
                     @auth
                         <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                                    <span class="badge badge-danger">{{ $unreadNotifications }}</span>
+                                @endif
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notificationDropdown">
+                                @if(isset($messages) && $messages->isNotEmpty())
+                                    @foreach($messages as $message)
+                                        <a class="dropdown-item" href="{{ route('messages.index', ['user' => $message->sender_id]) }}">
+                                            {{ Str::limit($message->content, 50) }}
+                                        </a>
+                                    @endforeach
+                                @else
+                                    <span class="dropdown-item">No new notifications</span>
+                                @endif
+                            </div>
+                        </li>
+
+
+                        <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {{ Auth::user()->name }}
                             </a>
