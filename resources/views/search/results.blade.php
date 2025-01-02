@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.navlayout')
 
 @section('title', 'Search Results - Online Marketplace')
 
@@ -6,6 +6,7 @@
 <div class="container">
     <h2 class="mb-4">Search Results for "{{ $query }}"</h2>
 
+    <!-- Product Results -->
     <h2 class="mb-3">Products</h2>
     @if ($products->isEmpty())
         <p>No products found.</p>
@@ -31,19 +32,27 @@
         </div>
     @endif
 
+    <!-- User Results -->
     <h2 class="mb-3">Users</h2>
     @if ($users->isEmpty())
         <p>No users found.</p>
     @else
         <div class="list-group">
             @foreach ($users as $user)
-                <a href="#" class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between">
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
                         <h5 class="mb-1">{{ $user->name }}</h5>
-                        <small>{{ $user->email }}</small>
+                        <p class="mb-1">{{ Str::limit($user->about_us, 100) }}</p>
+                        <small class="text-muted">{{ $user->email }}</small>
                     </div>
-                    <p class="mb-1">{{ Str::limit($user->about_us, 100) }}</p>
-                </a>
+                    <div>
+                        <!-- View Profile Button -->
+                        <a href="{{ route('users.show', $user->id) }}" class="btn btn-sm btn-info">View Profile</a>
+
+                        <!-- Message Button -->
+                        <a href="{{ route('messages.index', $user->id) }}" class="btn btn-sm btn-primary">Message</a>
+                    </div>
+                </div>
             @endforeach
         </div>
     @endif
