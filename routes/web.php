@@ -5,33 +5,32 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\Auth\WebForgotPasswordController;
-use App\Http\Controllers\Auth\WebResetPasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 
 // Homepage route
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// massage route
-Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
-Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
-Route::get('/messages/{id}', [MessageController::class, 'show']);
+// Messages Routes
+Route::get('/messages', [MessageController::class, 'index'])->name('messages.index'); // Messaging interface
+Route::post('/messages', [MessageController::class, 'store'])->name('messages.store'); // Store a new message
+Route::post('/messages/start', [MessageController::class, 'startConversation'])->name('messages.startConversation');
 
-// Authentication routes (Breeze and custom)
 require __DIR__.'/auth.php'; // Includes registration, login, and password reset routes
 
 // Password reset routes
-Route::controller(WebForgotPasswordController::class)->group(function () {
-    Route::get('password/reset', 'showLinkRequestForm')->name('web.password.request');
-    Route::post('password/email', 'sendResetLinkEmail')->name('web.password.email');
+Route::controller(ForgotPasswordController::class)->group(function () {
+    Route::get('password/reset', 'showLinkRequestForm')->name('password.request');
+    Route::post('password/email', 'sendResetLinkEmail')->name('password.email');
 });
-Route::controller(WebResetPasswordController::class)->group(function () {
-    Route::get('password/reset/{token}', 'showResetForm')->name('web.password.reset');
-    Route::post('password/reset', 'reset')->name('web.password.update');
+Route::controller(ResetPasswordController::class)->group(function () {
+    Route::get('password/reset/{token}', 'showResetForm')->name('password.reset');
+    Route::post('password/reset', 'reset')->name('password.update');
 });
-
 
 // Google Login routes
 Route::controller(AuthController::class)->group(function () {
@@ -55,8 +54,11 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
     Route::get('/edit', [HomeController::class, 'editProfile'])->name('edit'); // Edit profile form
     Route::put('/{id}', [HomeController::class, 'updateProfile'])->name('update'); // Update profile
     Route::post('/add-product', [HomeController::class, 'addProduct'])->name('addProduct'); // Add product
+    Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
+
 });
 
+Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
 
 // Category routes
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categories.show');
