@@ -7,7 +7,8 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Conversation;
-
+use Illuminate\Support\Facades\Log;
+use App\Events\MessageSent;
 
 class MessageController extends Controller
 {
@@ -17,93 +18,133 @@ class MessageController extends Controller
     public function index(Request $request)
     {
         $userId = auth()->id();
-        
-        // Fetch distinct conversations
-        $conversations = Message::where('sender_id', $userId)
-            ->orWhere('receiver_id', $userId)
-            ->selectRaw('IF(sender_id = ?, receiver_id, sender_id) as user_id', [$userId])
-            ->distinct()
-            ->with(['sender', 'receiver'])
+
+        // Fetch conversations
+        $conversations = Conversation::forUser($userId)
+            ->with(['user1', 'user2'])
             ->get();
-        
-        // Get the active conversation (if any)
+
+        // Get the active user if provided
         $activeUser = $request->query('user_id') 
             ? User::find($request->query('user_id')) 
             : null;
-        
-        // Fetch messages if a user is selected
+
+        if ($request->query('user_id') && !$activeUser) {
+            return redirect()->route('messages.index')->withErrors('Invalid user selected.');
+        }
+
+        // Fetch messages for the active user
         $messages = $activeUser
-            ? Message::where(function ($query) use ($userId, $activeUser) {
-                  $query->where('sender_id', $userId)->where('receiver_id', $activeUser->id);
-              })->orWhere(function ($query) use ($userId, $activeUser) {
-                  $query->where('sender_id', $activeUser->id)->where('receiver_id', $userId);
-              })->orderBy('created_at', 'asc')->get()
+            ? Message::where('conversation_id', function ($query) use ($userId, $activeUser) {
+                $query->select('id')
+                    ->from('conversations')
+                    ->where(function ($subQuery) use ($userId, $activeUser) {
+                        $subQuery->where('user1_id', $userId)
+                            ->where('user2_id', $activeUser->id);
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $activeUser) {
+                        $subQuery->where('user1_id', $activeUser->id)
+                            ->where('user2_id', $userId);
+                    });
+            })->orderBy('created_at', 'asc')->get()
             : null;
-    
-        // Get all users except the current authenticated user
+
+        // All users except the current authenticated user
         $users = User::where('id', '!=', $userId)->get();
-        
-        return view('messages.index', compact('conversations', 'activeUser', 'messages', 'users'));
+
+        return view('messages.messages', compact('conversations', 'activeUser', 'messages', 'users'));
     }
-    
-                
 
     /**
      * Store a new message.
      */
+
     public function store(Request $request)
     {
         $request->validate([
             'receiver_id' => 'required|exists:users,id',
             'content' => 'required|string|max:1000',
         ]);
-
-        $senderId = auth()->id();
-        $receiverId = $request->receiver_id;
-
-        // Check if a conversation already exists
-        $conversation = Conversation::firstOrCreate([
-            'user_one' => min($senderId, $receiverId),
-            'user_two' => max($senderId, $receiverId),
-        ]);
-
-        // Store the message
+    
+        $user1_id = min(auth()->id(), $request->receiver_id);
+        $user2_id = max(auth()->id(), $request->receiver_id);
+    
+        // Fetch or create the conversation
+        $conversation = Conversation::firstOrCreate(
+            [
+                'user1_id' => $user1_id,
+                'user2_id' => $user2_id,
+            ]
+        );
+    
+        // Create a new message
         $message = Message::create([
             'conversation_id' => $conversation->id,
-            'sender_id' => $senderId,
-            'receiver_id' => $receiverId,
+            'sender_id' => auth()->id(),
+            'receiver_id' => $request->receiver_id,
             'content' => $request->content,
         ]);
-
-        return redirect()->route('messages.index', ['user_id' => $receiverId]);
+    
+        // Broadcast the message to other participants
+        broadcast(new MessageSent($message))->toOthers();
+    
+        // Return JSON response for AJAX
+        return response()->json([
+            'success' => true,
+            'message' => [
+                'id' => $message->id,
+                'content' => $message->content,
+                'sender_id' => $message->sender_id,
+                'receiver_id' => $message->receiver_id,
+                'time' => $message->created_at->diffForHumans(),
+            ],
+        ]);
     }
-
+       
+    /**
+     * Start a conversation and send a message.
+     */
     public function startConversation(Request $request)
     {
         $request->validate([
             'receiver_id' => 'required|exists:users,id',
-            'content' => 'required|string|max:1000',
+            'content' => 'nullable|string|max:1000',
         ]);
-    
+
         $senderId = auth()->id();
         $receiverId = $request->receiver_id;
-    
-        // Create or find the conversation between the sender and receiver
-        $conversation = Conversation::firstOrCreate([
-            'user_one' => min($senderId, $receiverId),
-            'user_two' => max($senderId, $receiverId),
-        ]);
-    
-        // Store the initial message
-        Message::create([
-            'conversation_id' => $conversation->id,
-            'sender_id' => $senderId,
-            'receiver_id' => $receiverId,
-            'content' => $request->content,
-        ]);
-    
+
+        // Ensure user1_id is always the smaller ID
+        $user1Id = min($senderId, $receiverId);
+        $user2Id = max($senderId, $receiverId);
+
+        // Log user IDs
+        Log::info('User1 ID: ' . $user1Id);
+        Log::info('User2 ID: ' . $user2Id);
+
+        // Create or find the conversation
+        $conversation = Conversation::firstOrCreate(
+            [
+                'user1_id' => $user1Id,
+                'user2_id' => $user2Id,
+            ],
+            [
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
+        // If content is provided, create the initial message
+        if ($request->filled('content')) {
+            Message::create([
+                'conversation_id' => $conversation->id,
+                'sender_id' => $senderId,
+                'receiver_id' => $receiverId,
+                'content' => $request->content,
+            ]);
+        }
+
+        // Redirect to the messaging page with the active user
         return redirect()->route('messages.index', ['user_id' => $receiverId]);
     }
-    
-
 }

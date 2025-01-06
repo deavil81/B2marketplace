@@ -5,76 +5,142 @@
 @section('content')
 <div class="container mt-4">
     <div class="row">
-        <!-- Sidebar: List of Conversations -->
+        <!-- hi Conversations List Sidebar -->
         <div class="col-md-4 border-end">
             <h5>Conversations</h5>
             <ul class="list-group">
-                @forelse ($conversations as $conversation)
-                    <li class="list-group-item {{ isset($activeUser) && $conversation->id === $activeUser->id ? 'active' : '' }}">
-                        <a href="{{ route('messages.index', ['user_id' => $conversation->id]) }}" class="text-decoration-none text-dark">
-                            <strong>{{ $conversation->name }}</strong><br>
-                            <small class="text-muted">
-                                {{ $conversation->lastMessage ?? 'No messages yet' }}
-                            </small>
+                @foreach ($conversations as $conversation)
+                    @php
+                        $chatPartner = $conversation->user1_id === auth()->id() ? $conversation->user2 : $conversation->user1;
+                    @endphp
+                    <li class="list-group-item {{ $activeUser && $activeUser->id === $chatPartner->id ? 'active' : '' }}">
+                        <a href="{{ route('messages.index', ['user_id' => $chatPartner->id]) }}" class="text-decoration-none text-dark">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-3">
+                                    <img src="{{ asset($chatPartner->profile_picture ?? 'default-avatar.png') }}" alt="{{ $chatPartner->name }}" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">
+                                </div>
+                                <div>
+                                    <strong>{{ $chatPartner->name }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        {{ $conversation->messages->last()->content ?? 'No messages yet.' }}
+                                    </small>
+                                </div>
+                            </div>
                         </a>
                     </li>
-                @empty
-                    <li class="list-group-item">No conversations found.</li>
-                @endforelse
+                @endforeach
             </ul>
         </div>
 
-        <!-- Main Chat Section -->
+        <!-- Chat Panel -->
         <div class="col-md-8">
-            @if(isset($activeUser) && isset($messages))
-                <h5>Chat with {{ $activeUser->name }}</h5>
-                <div class="border p-3 chat-window" style="height: 60vh; overflow-y: scroll;">
-                    @forelse ($messages as $message)
-                        <div class="mb-3 {{ $message->sender_id === auth()->id() ? 'text-end' : 'text-start' }}">
-                            <p class="mb-1 {{ $message->sender_id === auth()->id() ? 'bg-primary text-white' : 'bg-light' }} p-2 rounded">
-                                {{ $message->content }}
-                            </p>
-                            <small class="text-muted">
-                                {{ $message->created_at->format('d M Y, h:i A') }}
-                            </small>
-                        </div>
-                    @empty
-                        <p>No messages in this conversation yet.</p>
-                    @endforelse
+            @if ($activeUser)
+                <div class="mb-3 chat-header d-flex align-items-center">
+                    <div class="avatar me-3">
+                        <img src="{{ asset($activeUser->profile_picture ?? 'default-avatar.png') }}" alt="{{ $activeUser->name }}" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">
+                    </div>
+                    <h5 class="mb-0">{{ $activeUser->name }}</h5>
+                </div>
+
+                <!-- Messages Display -->
+                <div id="chat-messages" class="p-3 mb-3 border chat-messages" style="height: 400px; overflow-y: scroll;">
+                    @if ($messages && $messages->count())
+                        @foreach ($messages as $message)
+                            <div class="mb-2 {{ $message->sender_id === auth()->id() ? 'text-end' : '' }}">
+                                <strong>{{ $message->sender_id === auth()->id() ? 'You' : $activeUser->name }}:</strong>
+                                <p>{{ $message->content }}</p>
+                                <small class="text-muted">{{ $message->created_at->diffForHumans() }}</small>
+                            </div>
+                        @endforeach
+                    @else
+                        <p class="text-muted">No messages yet. Start the conversation!</p>
+                    @endif
                 </div>
 
                 <!-- Message Input -->
-                <form action="{{ route('messages.store') }}" method="POST" class="mt-3">
+                <form id="message-form">
                     @csrf
-                    <input type="hidden" name="receiver_id" value="{{ $activeUser->id }}">
+                    <input type="hidden" name="receiver_id" id="receiver_id" value="{{ $activeUser->id }}">
                     <div class="input-group">
-                        <textarea name="content" class="form-control" rows="1" placeholder="Type a message..." required></textarea>
-                        <button type="submit" class="btn btn-primary">Send</button>
+                        <input type="text" name="content" id="message-content" class="form-control" placeholder="Type a message..." required>
+                        <button type="button" id="send-message" class="btn btn-primary">Send</button>
                     </div>
                 </form>
+                @error('content')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
             @else
-                <p class="text-center">Select a conversation to start chatting.</p>
+                <p class="text-muted">Select a conversation to start chatting.</p>
             @endif
-        </div>
-
-
-        <!-- Start a New Conversation -->
-        <div class="mt-4">
-            <h5>Start a Conversation</h5>
-            <form action="{{ route('messages.startConversation') }}" method="POST">
-                @csrf
-                <div class="input-group mb-3">
-                    <select name="receiver_id" class="form-control" required>
-                        <option value="" disabled selected>Select a user...</option>
-                        @foreach ($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                        @endforeach
-                    </select>
-                    <textarea name="content" class="form-control" rows="1" placeholder="Type a message..." required></textarea>
-                    <button type="submit" class="btn btn-primary">Send</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/laravel-echo"></script>
+<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+<script>
+    // Initialize Pusher
+    Pusher.logToConsole = true;
+
+    const echo = new Echo({
+        broadcaster: 'pusher',
+        key: '{{ config('broadcasting.connections.pusher.key') }}',
+        cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
+        forceTLS: true
+    });
+
+    @if ($activeUser && isset($conversation))
+    echo.private('conversation.{{ $conversation->id }}')
+        .listen('MessageSent', (event) => {
+            const authId = {{ auth()->id() }};
+            const isAuthUser = event.message.sender_id === authId;
+            const messageContainer = document.getElementById('chat-messages');
+            messageContainer.innerHTML += `
+                <div class="mb-2 ${isAuthUser ? 'text-end' : ''}">
+                    <strong>${isAuthUser ? 'You' : '{{ $activeUser->name }}'}:</strong>
+                    <p>${event.message.content}</p>
+                    <small class="text-muted">${new Date(event.message.created_at).toLocaleTimeString()}</small>
+                </div>
+            `;
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        });
+    @endif
+
+    // Handle Sending Messages
+    document.getElementById('send-message').addEventListener('click', function () {
+        const receiverId = document.getElementById('receiver_id').value;
+        const content = document.getElementById('message-content').value;
+
+        fetch('{{ route('messages.store') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            },
+            body: JSON.stringify({
+                receiver_id: receiverId,
+                content: content,
+            }),
+        })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.status === 'Message Sent!') {
+                document.getElementById('message-content').value = ''; // Clear the input field
+            } else {
+                alert('Failed to send the message.');
+            }
+        })
+        .catch((error) => console.error('Error sending message:', error));
+    });
+</script>
+@endpush

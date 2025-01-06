@@ -11,6 +11,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\WebResetPasswordController;
 
 // Homepage route
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -18,19 +19,29 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Messages Routes
 Route::get('/messages', [MessageController::class, 'index'])->name('messages.index'); // Messaging interface
 Route::post('/messages', [MessageController::class, 'store'])->name('messages.store'); // Store a new message
-Route::post('/messages/start', [MessageController::class, 'startConversationAndSendMessage'])->name('messages.startConversation');
+Route::post('/messages/start', [MessageController::class, 'startConversation'])->name('messages.startConversation');
+Route::post('/conversations/start', [MessageController::class, 'startConversation'])->name('conversations.start');
+Route::post('/messages/send', [MessageController::class, 'send'])->name('messages.send');
 
-// Authentication routes (Breeze and custom)
 require __DIR__.'/auth.php'; // Includes registration, login, and password reset routes
 
-// Password reset routes
+
+
+// Password Reset Routes
 Route::controller(ForgotPasswordController::class)->group(function () {
     Route::get('password/reset', 'showLinkRequestForm')->name('password.request');
     Route::post('password/email', 'sendResetLinkEmail')->name('password.email');
 });
+
 Route::controller(ResetPasswordController::class)->group(function () {
     Route::get('password/reset/{token}', 'showResetForm')->name('password.reset');
     Route::post('password/reset', 'reset')->name('password.update');
+});
+
+// Web-Specific Reset Password Routes (if needed separately)
+Route::controller(WebResetPasswordController::class)->group(function () {
+    Route::get('web/password/reset/{token}', 'showResetForm')->name('web.password.reset');
+    Route::post('web/password/reset', 'reset')->name('web.password.update');
 });
 
 // Google Login routes

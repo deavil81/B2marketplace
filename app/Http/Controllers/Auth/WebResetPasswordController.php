@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 
 class WebResetPasswordController extends Controller
@@ -50,6 +51,11 @@ class WebResetPasswordController extends Controller
     {
         $request->validate($this->rules(), $this->validationErrorMessages());
 
+        // Logout user if they are currently authenticated
+        if (Auth::check()) {
+            Auth::logout();
+        }
+
         // Attempt to reset the user's password
         $response = $this->broker()->reset(
             $this->credentials($request), function ($user, $password) {
@@ -59,7 +65,19 @@ class WebResetPasswordController extends Controller
 
         // Redirect the user based on the reset response
         return $response == Password::PASSWORD_RESET
-                    ? $this->sendResetResponse($request, $response)
-                    : $this->sendResetFailedResponse($request, $response);
+            ? $this->sendResetResponse($request, $response)
+            : $this->sendResetFailedResponse($request, $response);
+    }
+
+    /**
+     * Send the response after a successful password reset.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $response
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function sendResetResponse(Request $request, $response)
+    {
+        return redirect($this->redirectPath())->with('status', trans($response));
     }
 }

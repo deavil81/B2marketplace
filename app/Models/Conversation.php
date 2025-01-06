@@ -11,6 +11,8 @@ class Conversation extends Model
 
     protected $fillable = ['user1_id', 'user2_id'];
 
+    protected $with = ['user1', 'user2'];
+
     // Relationship with messages
     public function messages()
     {
@@ -32,6 +34,18 @@ class Conversation extends Model
     // Helper to get the other user in the conversation
     public function otherUser($currentUserId)
     {
-        return $this->user1_id === $currentUserId ? $this->user2 : $this->user1;
+        if ($this->user1_id === $currentUserId) {
+            return $this->user2;
+        } elseif ($this->user2_id === $currentUserId) {
+            return $this->user1;
+        }
+
+        return null;
+    }
+
+    // Scope to fetch conversations for a specific user
+    public function scopeForUser($query, $userId)
+    {
+        return $query->where('user1_id', $userId)->orWhere('user2_id', $userId);
     }
 }

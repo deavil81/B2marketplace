@@ -15,6 +15,15 @@
             <form class="login100-form validate-form" id="login-form" action="{{ route('login.post') }}" method="POST">
                 @csrf
                 <span class="login100-form-title">Login</span>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>

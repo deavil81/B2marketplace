@@ -25,3 +25,15 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
+// Assuming you have access to conversationId
+const conversationId = 1; // Replace with actual conversation ID
+
+Echo.channel('messages.' + conversationId)
+    .listen('MessageSent', (e) => {
+        console.log(e.message);
+        // Append the new message to the chat
+        let messageHtml = `<div class="message">
+                              <p><strong>${e.message.sender.name}:</strong> ${e.message.content}</p>
+                           </div>`;
+        document.querySelector('#messages').innerHTML += messageHtml;
+    });
