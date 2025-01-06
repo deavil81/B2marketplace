@@ -5,7 +5,7 @@
 @section('content')
 <div class="container mt-4">
     <div class="row">
-        <!-- hi Conversations List Sidebar -->
+        <!-- Conversations List Sidebar -->
         <div class="col-md-4 border-end">
             <h5>Conversations</h5>
             <ul class="list-group">
