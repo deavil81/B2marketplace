@@ -34,7 +34,7 @@ class User extends Authenticatable
 
     public function getProfilePicturePathAttribute(): string
     {
-        return $this->profile_picture 
+        return $this->profile_pictures 
             ? asset('storage/' . $this->profile_picture) 
             : asset('default-avatar.png');
     }
@@ -69,4 +69,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Message::class, 'receiver_id');
     }
+
+   
 }

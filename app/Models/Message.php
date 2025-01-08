@@ -20,4 +20,14 @@ class Message extends Model
     {
         return $this->belongsTo(User::class, 'receiver_id');
     }
+    public function conversation()
+    {
+        return $this->belongsTo(Conversation::class);
+    }
+
+    public function latestMessage()
+    {
+        return $this->hasOne(Message::class, 'receiver_id', 'id')->latestOfMany();
+    }
+  
 }

@@ -3,144 +3,91 @@
 @section('title', 'Messaging')
 
 @section('content')
-<div class="container mt-4">
-    <div class="row">
-        <!-- Conversations List Sidebar -->
-        <div class="col-md-4 border-end">
-            <h5>Conversations</h5>
-            <ul class="list-group">
-                @foreach ($conversations as $conversation)
-                    @php
-                        $chatPartner = $conversation->user1_id === auth()->id() ? $conversation->user2 : $conversation->user1;
-                    @endphp
-                    <li class="list-group-item {{ $activeUser && $activeUser->id === $chatPartner->id ? 'active' : '' }}">
-                        <a href="{{ route('messages.index', ['user_id' => $chatPartner->id]) }}" class="text-decoration-none text-dark">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar me-3">
-                                    <img src="{{ asset($chatPartner->profile_picture ?? 'default-avatar.png') }}" alt="{{ $chatPartner->name }}" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">
-                                </div>
-                                <div>
-                                    <strong>{{ $chatPartner->name }}</strong>
-                                    <br>
-                                    <small class="text-muted">
-                                        {{ $conversation->messages->last()->content ?? 'No messages yet.' }}
-                                    </small>
-                                </div>
-                            </div>
-                        </a>
-                    </li>
+<div class="container mt-4 d-flex">
+
+    <!-- Sidebar for Users List -->
+    <div class="col-md-3 border-end">
+        <h5 class="p-2">Chats</h5>
+        <ul class="list-group">
+            @forelse ($users as $user)
+                <li class="list-group-item d-flex justify-content-between align-items-center {{ $activeUser && $activeUser->id === $user->id ? 'active' : '' }}">
+                    <a href="{{ route('messages.index', ['user_id' => $user->id]) }}" class="text-decoration-none text-dark">
+                        <div>
+                            <strong>{{ $user->name }}</strong>
+                            <br>
+                            <small class="text-muted">
+                                {{-- Optional: Display the latest message snippet --}}
+                                {{ optional($user->latestMessage)->content ?? 'No messages yet.' }}
+                            </small>
+                        </div>
+                    </a>
+                </li>
+            @empty
+                <p class="text-muted">No conversations yet. Start a new one!</p>
+            @endforelse
+        </ul>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="col-md-9">
+        <div class="p-3 border chat-area" style="height: 500px; overflow-y: scroll;">
+            @if ($messages && $messages->count())
+                @foreach ($messages as $message)
+                    <div class="mb-2 {{ $message->sender_id === auth()->id() ? 'text-end' : '' }}">
+                        <strong>{{ $message->sender_id === auth()->id() ? 'You' : $activeUser->name }}:</strong>
+                        <p>{{ $message->content }}</p>
+                        <small class="text-muted">{{ $message->created_at->diffForHumans() }}</small>
+                    </div>
                 @endforeach
-            </ul>
-        </div>
-
-        <!-- Chat Panel -->
-        <div class="col-md-8">
-            @if ($activeUser)
-                <div class="mb-3 chat-header d-flex align-items-center">
-                    <div class="avatar me-3">
-                        <img src="{{ asset($activeUser->profile_picture ?? 'default-avatar.png') }}" alt="{{ $activeUser->name }}" class="img-fluid rounded-circle" style="width: 40px; height: 40px;">
-                    </div>
-                    <h5 class="mb-0">{{ $activeUser->name }}</h5>
-                </div>
-
-                <!-- Messages Display -->
-                <div id="chat-messages" class="p-3 mb-3 border chat-messages" style="height: 400px; overflow-y: scroll;">
-                    @if ($messages && $messages->count())
-                        @foreach ($messages as $message)
-                            <div class="mb-2 {{ $message->sender_id === auth()->id() ? 'text-end' : '' }}">
-                                <strong>{{ $message->sender_id === auth()->id() ? 'You' : $activeUser->name }}:</strong>
-                                <p>{{ $message->content }}</p>
-                                <small class="text-muted">{{ $message->created_at->diffForHumans() }}</small>
-                            </div>
-                        @endforeach
-                    @else
-                        <p class="text-muted">No messages yet. Start the conversation!</p>
-                    @endif
-                </div>
-
-                <!-- Message Input -->
-                <form id="message-form">
-                    @csrf
-                    <input type="hidden" name="receiver_id" id="receiver_id" value="{{ $activeUser->id }}">
-                    <div class="input-group">
-                        <input type="text" name="content" id="message-content" class="form-control" placeholder="Type a message..." required>
-                        <button type="button" id="send-message" class="btn btn-primary">Send</button>
-                    </div>
-                </form>
-                @error('content')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                @enderror
             @else
-                <p class="text-muted">Select a conversation to start chatting.</p>
+                <p class="text-muted">No messages yet. Start the conversation!</p>
             @endif
         </div>
+
+        <!-- Message Input -->
+        <form id="message-form" class="mt-3">
+            <input type="text" id="message-input" placeholder="Type a message..." class="form-control">
+            <input type="hidden" id="receiver_id" value="{{ $activeUser ? $activeUser->id : '' }}">
+            <button type="button" id="send-message" class="btn btn-primary mt-2">Send</button>
+        </form>
     </div>
+
 </div>
-@endsection
 
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/laravel-echo"></script>
-<script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+<!-- Include Axios Library -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <script>
-    // Initialize Pusher
-    Pusher.logToConsole = true;
-
-    const echo = new Echo({
-        broadcaster: 'pusher',
-        key: '{{ config('broadcasting.connections.pusher.key') }}',
-        cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
-        forceTLS: true
-    });
-
-    @if ($activeUser && isset($conversation))
-    echo.private('conversation.{{ $conversation->id }}')
-        .listen('MessageSent', (event) => {
-            const authId = {{ auth()->id() }};
-            const isAuthUser = event.message.sender_id === authId;
-            const messageContainer = document.getElementById('chat-messages');
-            messageContainer.innerHTML += `
-                <div class="mb-2 ${isAuthUser ? 'text-end' : ''}">
-                    <strong>${isAuthUser ? 'You' : '{{ $activeUser->name }}'}:</strong>
-                    <p>${event.message.content}</p>
-                    <small class="text-muted">${new Date(event.message.created_at).toLocaleTimeString()}</small>
-                </div>
-            `;
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-        });
-    @endif
-
-    // Handle Sending Messages
-    document.getElementById('send-message').addEventListener('click', function () {
+    const sendButton = document.getElementById('send-message');
+    sendButton.onclick = function () {
+        const messageInput = document.getElementById('message-input');
+        const content = messageInput.value.trim();
         const receiverId = document.getElementById('receiver_id').value;
-        const content = document.getElementById('message-content').value;
 
-        fetch('{{ route('messages.store') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            },
-            body: JSON.stringify({
-                receiver_id: receiverId,
-                content: content,
-            }),
+        if (content === '') {
+            alert('Please enter a message before sending.');
+            return;
+        }
+
+        axios.post('{{ route('messages.store') }}', {
+            receiver_id: receiverId,
+            content: content,
         })
         .then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
+            const messageContainer = document.querySelector('.chat-area');
+            messageContainer.innerHTML += `
+                <div class="mb-2 text-end">
+                    <strong>You:</strong>
+                    <p>${response.data.message.content}</p>
+                    <small class="text-muted">${response.data.message.time}</small>
+                </div>
+            `;
+            messageInput.value = '';
+            messageContainer.scrollTop = messageContainer.scrollHeight;
         })
-        .then((data) => {
-            if (data.status === 'Message Sent!') {
-                document.getElementById('message-content').value = ''; // Clear the input field
-            } else {
-                alert('Failed to send the message.');
-            }
-        })
-        .catch((error) => console.error('Error sending message:', error));
-    });
+        .catch((error) => {
+            console.error('Error sending message:', error);
+        });
+    };
 </script>
-@endpush
+@endsection
