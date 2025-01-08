@@ -5,68 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - Online Marketplace</title>
     <link rel="stylesheet" href="{{ asset('css/indexstyle.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .sidebar {
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100%;
-            background: #f8f9fa;
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-            transition: right 0.3s ease;
-            z-index: 1050;
-        }
-
-        .sidebar.active {
-            right: 0;
-        }
-
-        .sidebar-header {
-            padding: 10px 15px;
-            background: #007bff;
-            color: #fff;
-        }
-
-        .message-item {
-            padding: 10px 15px;
-            border-bottom: 1px solid #ddd;
-            cursor: pointer;
-        }
-
-        .message-item:hover {
-            background: #f1f1f1;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-            }
-        }
-
-        .input-group {
-            border-radius: 25px;
-            overflow: hidden;
-        }
-
-        .input-group .form-control {
-            border-radius: 25px 0 0 25px;
-            padding: 5px 10px;
-        }
-
-        .input-group .btn {
-            border-radius: 0 25px 25px 0;
-            background-color: #000;
-            color: #fff;
-            border: none;
-        }
-
-        .input-group .btn:hover {
-            background-color: #333;
-        }
-    </style>
 </head>
 <body>
     <!-- Navbar -->
