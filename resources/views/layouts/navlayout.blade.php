@@ -40,20 +40,20 @@
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    {{ Auth::user()->name }}
+                                    <i class="fas fa-user"></i> {{ Auth::user()->name }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('settings') }}">Settings</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('home') }}">Home</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('about') }}">About</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
-                                    <li><a class="dropdown-item" href="#contact">Contact</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('settings') }}"><i class="fas fa-cog"></i> Settings</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('home') }}"><i class="fas fa-home"></i> Home</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit"></i> Profile</a></li>
+                                    <li><a class="dropdown-item" href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <a class="dropdown-item" href="{{ route('logout') }}" 
                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                           Logout
+                                           <i class="fas fa-sign-out-alt"></i> Logout
                                         </a>
                                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                             @csrf
@@ -67,11 +67,11 @@
                                     <i class="bi bi-person"></i>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="{{ route('home') }}">Home</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('about') }}">About</a></li>
-                                    <li><a class="dropdown-item" href="#contact">Contact</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('home') }}"><i class="fas fa-home"></i> Home</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
+                                    <li><a class="dropdown-item" href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{{ route('login') }}">Login</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
                                 </ul>
                             </li>
                         @endauth
