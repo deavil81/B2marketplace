@@ -4,18 +4,22 @@
 
 @section('content')
 <div class="container mt-4 d-flex">
-
     <!-- Sidebar for Users List -->
     <div class="col-md-3 border-end">
         <h5 class="p-2">Chats</h5>
         <ul class="list-group" style="max-height: 500px; overflow-y: auto;">
             @forelse ($users as $user)
                 <a href="{{ route('messages.index', ['user_id' => $user->id]) }}" 
-                   class="list-group-item list-group-item-action d-flex align-items-center {{ $activeUser && $activeUser->id === $user->id ? 'active' : '' }}"
-                   style="border-radius: 5px;">
+                class="list-group-item list-group-item-action d-flex align-items-center {{ $activeUser && $activeUser->id === $user->id ? 'active' : '' }}"
+                style="border-radius: 5px;">
                     <!-- User Profile Photo -->
-                    <img src="{{ $user->profile_photo ? asset('storage/' . $user->profile_photo) : asset('images/default-profile.png') }}" 
-                         alt="{{ $user->name }}" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                    <img 
+                        src="{{ $user && $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('images/default-profile.png') }}" 
+                        alt="Profile Picture" 
+                        class="img-thumbnail rounded-circle" 
+                        style="width: 40px; height: 40px; object-fit: cover;" 
+                        onerror="this.src='{{ asset('images/default-profile.png') }}';"
+                    >
 
                     <!-- User Name and Latest Message -->
                     <div>

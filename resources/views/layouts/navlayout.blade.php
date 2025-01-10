@@ -90,7 +90,7 @@
             </button>
         </div>
         <div class="sidebar-content">
-            <button class="btn btn-primary" onclick="viewMessages()">View Messages</button>
+            <button class="btn btn-primary view-messages-button" onclick="viewMessages()">View Messages</button>
             @if (isset($messages) && $messages->isNotEmpty())
                 @foreach ($messages as $message)
                     <div class="message-item {{ isset($activeUser) && $activeUser->id === $message->sender->id ? 'bg-light' : '' }}">
@@ -141,13 +141,28 @@
                         <h6>${data.title}</h6>
                         <p>${data.content}</p>
                     `);
-                    
                 },
                 error: function() {
                     alert('Error fetching message content.');
                 }
             });
         }
+
+        // Remove duplicate users from notifications
+        document.addEventListener("DOMContentLoaded", function() {
+            const messageItems = document.querySelectorAll(".message-item");
+            const users = new Set();
+
+            messageItems.forEach(item => {
+                const userId = item.querySelector("a").href.split("user_id=")[1];
+                if (users.has(userId)) {
+                    item.remove();
+                } else {
+                    users.add(userId);
+                }
+            });
+        });
+
     </script>
 </body>
 </html>

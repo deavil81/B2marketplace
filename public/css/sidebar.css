@@ -9,6 +9,7 @@
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     transition: right 0.3s ease;
     z-index: 1050;
+    overflow-y: auto; /* Enable scrolling if content overflows */
 }
 
 .sidebar.active {
@@ -16,19 +17,62 @@
 }
 
 .sidebar-header {
-    padding: 10px 15px;
+    padding: 15px;
     background: #007bff;
     color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e5e5;
+}
+.view-messages-button {
+    background-color: #007BFF; /* Blue background */
+    color: white; /* White text */
+    padding: 10px 20px; /* Padding */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Shadow */
+    transition: background-color 0.3s ease; /* Transition effect */
+}
+
+.view-messages-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.sidebar-header h5 {
+    margin: 0;
+}
+
+.sidebar-header .close {
+    font-size: 1.2rem;
+    color: #fff;
+    cursor: pointer;
+}
+
+.sidebar-content {
+    padding: 15px;
 }
 
 .message-item {
     padding: 10px 15px;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 .message-item:hover {
     background: #f1f1f1;
+}
+
+.message-item img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 @media (max-width: 768px) {

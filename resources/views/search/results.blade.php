@@ -40,10 +40,21 @@
         <div class="list-group">
             @foreach ($users as $user)
                 <div class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="mb-1">{{ $user->name }}</h5>
-                        <p class="mb-1">{{ Str::limit($user->about_us, 100) }}</p>
-                        <small class="text-muted">{{ $user->email }}</small>
+                    <div class="d-flex align-items-center">
+                        <!-- User Profile Photo -->
+                        <img 
+                            src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('images/default-profile.png') }}" 
+                            alt="Profile Picture" 
+                            class="img-thumbnail rounded-circle me-3" 
+                            style="width: 50px; height: 50px; object-fit: cover;"
+                        >
+
+                        <!-- User Info -->
+                        <div>
+                            <h5 class="mb-1">{{ $user->name }}</h5>
+                            <p class="mb-1">{{ Str::limit($user->about_us, 100) }}</p>
+                            <small class="text-muted">{{ $user->email }}</small>
+                        </div>
                     </div>
                     <div>
                         <!-- View Profile Button -->
@@ -54,7 +65,6 @@
                             <input type="hidden" name="receiver_id" value="{{ $user->id }}">
                             <button type="submit" class="btn btn-sm btn-primary">Message</button>
                         </form>
-
                     </div>
                 </div>
             @endforeach
@@ -62,6 +72,7 @@
     @endif
 </div>
 @endsection
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Attach click event to all Message buttons

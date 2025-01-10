@@ -7,7 +7,12 @@
     <div class="row">
         <!-- Profile Section -->
         <div class="text-center col-md-3">
-            <img src="{{ asset('path/to/profile-pic.jpg') }}" alt="Profile Picture" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px;">
+            <img 
+                src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('images/default-profile.png') }}" 
+                alt="Profile Picture" 
+                class="img-thumbnail rounded-circle" 
+                style="width: 150px; height: 150px; object-fit: cover;"
+            >
             <h4 class="mt-3">{{ $user->name }}</h4>
             <p class="text-muted">{{ $user->email }}</p>
             
@@ -41,47 +46,50 @@
 
                 <!-- Products Tab -->
                 <div class="tab-pane fade" id="products">
-                    <div class="mb-3 d-flex justify-content-between align-items-center">
-                        <h5>Your Products</h5>
-                        @if(auth()->id() === $user->id)
-                            <a href="{{ route('products.create') }}" class="btn btn-success">Add New Product</a>
-                        @endif
-                    </div>
-
+                    <!-- User Products Section -->
                     <div class="row">
-                        @forelse($products as $product)
-                            <div class="mb-3 col-md-4">
-                                <div class="card">
-                                    <img src="{{ $product->image_path ? asset($product->image_path) : asset('default-product.png') }}" class="card-img-top" alt="{{ $product->title }}">
-                                    <div class="text-center card-body">
-                                        <h6 class="card-title">{{ $product->title }}</h6>
-                                        <p class="card-text text-muted">{{ $product->description }}</p>
-                                        <p class="card-text"><strong>Price:</strong> ₹{{ $product->price }}</p>
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5>Your Products</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        @forelse ($products as $product)
+                                            <div class="mb-4 col-md-4">
+                                                <div class="card h-100">
+                                                    @if ($product->thumbnail_image_id && $product->images->contains('id', $product->thumbnail_image_id))
+                                                        @php
+                                                            $thumbnail = $product->images->firstWhere('id', $product->thumbnail_image_id);
+                                                        @endphp
+                                                        <img src="{{ asset('storage/' . $thumbnail->image_path) }}" alt="{{ $product->title }}">
+                                                    @elseif ($product->images->isNotEmpty())
+                                                        <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" alt="{{ $product->title }}">
+                                                    @else
+                                                        <img src="{{ asset('storage/default-product.png') }}" alt="Default Product Image">
+                                                    @endif
 
-                                        @if(auth()->id() === $user->id)
-                                            <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                            <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display: inline-block;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                                            </form>
-                                        @endif
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">{{ $product->title }}</h6>
+                                                        <p class="card-text">{{ Str::limit($product->description, 100, '...') }}</p>
+                                                        <p><strong>Price:</strong> ₹{{ $product->price }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="col-12">
+                                                <p class="text-center text-muted">No products added yet.</p>
+                                            </div>
+                                        @endforelse
                                     </div>
                                 </div>
                             </div>
-                        @empty
-                            <div class="text-center">
-                                <p>No products available at the moment.</p>
-                                @if(auth()->id() === $user->id)
-                                    <a href="{{ route('products.create') }}" class="btn btn-success">Add Your First Product</a>
-                                @endif
-                            </div>
-                        @endforelse
+                        </div>
                     </div>
+                </div>
 
-                    <div class="d-flex justify-content-center">
-                        {{ $products->links() }}
-                    </div>
+                <div class="d-flex justify-content-center">
+                    {{ $products->links() }}
                 </div>
             </div>
         </div>

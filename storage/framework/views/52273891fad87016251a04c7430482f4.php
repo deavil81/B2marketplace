@@ -91,7 +91,7 @@
             </button>
         </div>
         <div class="sidebar-content">
-            <button class="btn btn-primary" onclick="viewMessages()">View Messages</button>
+            <button class="btn btn-primary view-messages-button" onclick="viewMessages()">View Messages</button>
             <?php if(isset($messages) && $messages->isNotEmpty()): ?>
                 <?php $__currentLoopData = $messages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="message-item <?php echo e(isset($activeUser) && $activeUser->id === $message->sender->id ? 'bg-light' : ''); ?>">
@@ -142,13 +142,28 @@
                         <h6>${data.title}</h6>
                         <p>${data.content}</p>
                     `);
-                    
                 },
                 error: function() {
                     alert('Error fetching message content.');
                 }
             });
         }
+
+        // Remove duplicate users from notifications
+        document.addEventListener("DOMContentLoaded", function() {
+            const messageItems = document.querySelectorAll(".message-item");
+            const users = new Set();
+
+            messageItems.forEach(item => {
+                const userId = item.querySelector("a").href.split("user_id=")[1];
+                if (users.has(userId)) {
+                    item.remove();
+                } else {
+                    users.add(userId);
+                }
+            });
+        });
+
     </script>
 </body>
 </html>

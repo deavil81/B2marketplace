@@ -4,18 +4,22 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="container mt-4 d-flex">
-
     <!-- Sidebar for Users List -->
     <div class="col-md-3 border-end">
         <h5 class="p-2">Chats</h5>
         <ul class="list-group" style="max-height: 500px; overflow-y: auto;">
             <?php $__empty_1 = true; $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <a href="<?php echo e(route('messages.index', ['user_id' => $user->id])); ?>" 
-                   class="list-group-item list-group-item-action d-flex align-items-center <?php echo e($activeUser && $activeUser->id === $user->id ? 'active' : ''); ?>"
-                   style="border-radius: 5px;">
+                class="list-group-item list-group-item-action d-flex align-items-center <?php echo e($activeUser && $activeUser->id === $user->id ? 'active' : ''); ?>"
+                style="border-radius: 5px;">
                     <!-- User Profile Photo -->
-                    <img src="<?php echo e($user->profile_photo ? asset('storage/' . $user->profile_photo) : asset('images/default-profile.png')); ?>" 
-                         alt="<?php echo e($user->name); ?>" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                    <img 
+                        src="<?php echo e($user && $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('images/default-profile.png')); ?>" 
+                        alt="Profile Picture" 
+                        class="img-thumbnail rounded-circle" 
+                        style="width: 40px; height: 40px; object-fit: cover;" 
+                        onerror="this.src='<?php echo e(asset('images/default-profile.png')); ?>';"
+                    >
 
                     <!-- User Name and Latest Message -->
                     <div>
