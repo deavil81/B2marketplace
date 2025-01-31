@@ -46,7 +46,7 @@
             </div>
 
             <!-- Registration Form -->
-            <form class="login100-form validate-form" id="register-form" action="{{ route('register') }}" method="POST" style="display: none;">
+            <form class="login100-form validate-form" id="register-form" action="{{ route('register.details') }}" method="GET" style="display: none;">
                 @csrf
                 <span class="login100-form-title">Register</span>
                 <div class="form-group">
@@ -58,10 +58,6 @@
                     <input type="password" class="form-control" id="password_register" name="password" placeholder="Password" required>
                 </div>
                 <div class="form-group">
-                    <label for="password_confirmation">Confirm Password</label>
-                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm Password" required>
-                </div>
-                <div class="form-group">
                     <label for="role">Role</label>
                     <select class="form-control" id="role" name="role" required>
                         <option value="" disabled selected>Select Role</option>
@@ -69,10 +65,9 @@
                         <option value="seller">Seller</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-register">Register</button>
+                <button type="submit" class="btn btn-register">Proceed</button>
             </form>
         </div>
-    </div>
 
     <script>
         function onSuccess(googleUser) {

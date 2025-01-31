@@ -1,10 +1,11 @@
-@extends('layouts.navlayout') 
-@section('content') 
+@extends('layouts.navlayout')
+
+@section('content')
 <div class="container py-4"> 
     <div class="row"> 
         <div class="col-md-4"> 
             <!-- Profile Picture, Name, and Email Card --> 
-            <div class="card text-center widget-card border-light shadow-sm"> 
+            <div class="text-center shadow-sm card widget-card border-light"> 
                 <div class="card-body d-flex flex-column align-items-center"> 
                     <img src="{{ asset('storage/' . ($user->profile_picture ?? 'default-avatar.png')) }}" 
                          class="mb-3 rounded-circle img-thumbnail" alt="Profile Picture" style="width: 150px; height: 150px;"> 
@@ -17,8 +18,8 @@
             </div> 
         </div> 
         <div class="col-md-8"> 
-            <div class="card widget-card border-light shadow-sm"> 
-                <div class="card-body p-4"> 
+            <div class="shadow-sm card widget-card border-light"> 
+                <div class="p-4 card-body"> 
                     <ul class="nav nav-tabs" id="profileTab" role="tablist"> 
                         <li class="nav-item" role="presentation"> 
                             <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview-tab-pane" type="button" role="tab" aria-controls="overview-tab-pane" aria-selected="true">Overview</button> 
@@ -62,15 +63,15 @@
                             <div>
                                 <form action="{{ route('password.update') }}" method="POST">
                                     @csrf
-                                    <div class="form-group mb-3">
+                                    <div class="mb-3 form-group">
                                         <label for="current_password" class="form-label">Current Password</label>
                                         <input type="password" class="form-control" id="current_password" name="current_password" required>
                                     </div>
-                                    <div class="form-group mb-3">
+                                    <div class="mb-3 form-group">
                                         <label for="new_password" class="form-label">New Password</label>
                                         <input type="password" class="form-control" id="new_password" name="new_password" required>
                                     </div>
-                                    <div class="form-group mb-3">
+                                    <div class="mb-3 form-group">
                                         <label for="new_password_confirmation" class="form-label">Confirm New Password</label>
                                         <input type="password" class="form-control" id="new_password_confirmation" name="new_password_confirmation" required>
                                     </div>
@@ -95,24 +96,24 @@
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="name" name="name" value="{{ $user->name }}" required>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}" required>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
                             <small class="form-text text-muted">Leave blank to keep the current password.</small>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="profile_picture" class="form-label">Profile Picture</label>
                             <input type="file" class="form-control" id="profile_picture" name="profile_picture">
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="business_type" class="form-label">Business Type</label>
                             <select class="form-control" id="business_type" name="business_type" required>
                                 <option value="" disabled selected>Select Business Type</option>
@@ -148,15 +149,15 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="about_us" class="form-label">About Us</label>
                             <textarea class="form-control" id="about_us" name="about_us" rows="3">{{ $user->about_us }}</textarea>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="phone" class="form-label">Phone</label>
                             <input type="text" class="form-control" id="phone" name="phone" value="{{ $user->phone }}">
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="address" class="form-label">Address</label>
                             <input type="text" class="form-control" id="address" name="address" value="{{ $user->address }}">
                         </div>
@@ -227,9 +228,8 @@
             </div>
         </div>
     </div>
-
     <!-- Add Product Modal -->
-    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -239,32 +239,40 @@
                 <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="title" class="form-label">Product Title</label>
                             <input type="text" class="form-control" id="title" name="title" placeholder="Enter product title" required>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="description" class="form-label">Product Description</label>
                             <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter product description"></textarea>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="thumbnail_image" class="form-label">Thumbnail Image</label>
-                            <input type="file" class="form-control" id="thumbnail_image" name="thumbnail_image" accept="image/*">                        </div>
-                        <div class="form-group mb-3">
+                            <input type="file" class="form-control" id="thumbnail_image" name="thumbnail_image" accept="image/*">
+                        </div>
+                        <div class="mb-3 form-group">
                             <label for="images" class="form-label">Product Images</label>
                             <input type="file" class="form-control" id="images" name="images[]" multiple onchange="previewImages()">
-                            <div id="imagePreview" class="mt-2 d-flex flex-wrap"></div>
+                            <div id="imagePreview" class="flex-wrap mt-2 d-flex"></div>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="price" class="form-label">Price</label>
                             <input type="number" class="form-control" id="price" name="price" placeholder="Enter product price" min="0" required>
                         </div>
-                        <div class="form-group mb-3">
+                        <div class="mb-3 form-group">
                             <label for="category_id" class="form-label">Category</label>
-                            <select class="form-control" id="category_id" name="category_id" required>
+                            <select class="form-control" id="category_id" name="category_id" onchange="fetchSubcategories()" required>
+                                <option value="" disabled selected>Select a category</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label for="subcategory_id" class="form-label">Subcategory</label>
+                            <select class="form-control" id="subcategory_id" name="subcategory_id" required>
+                                <option value="" disabled selected>Select a subcategory</option>
                             </select>
                         </div>
                     </div>
@@ -276,38 +284,110 @@
             </div>
         </div>
     </div>
-@endsection 
-@section('styles')
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 @endsection
 
-@section('scripts') <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<style> .modal-body .form-label { font-weight: bold; } .modal-body .form-control { border-radius: 0.25rem; } .modal-body .form-control-file { margin-top: 0.5rem; } #imagePreview img { margin: 5px; border: 1px solid #ddd; border-radius: 5px; padding: 5px; } 
-</style> 
-    <script> 
-        function previewImages() { 
-            var preview = document.getElementById('imagePreview'); 
-            preview.innerHTML = ''; 
-            if (this.files) { 
-                [].forEach.call(this.files, readAndPreview); 
+<script>
+    // Ensure functions are available globally for inline event handlers
+    window.fetchSubcategories = function fetchSubcategories() {
+        console.log("fetchSubcategories called!");
 
-            } 
-            function readAndPreview(file) { 
-                if (!/\.(jpe?g|png|gif)$/i.test(file.name)) { 
-                    return alert(file.name + " is not an image"); 
-                } 
-                var reader = new FileReader(); 
-                reader.addEventListener("load", function() { 
-                    var image = new Image(); image.height = 100; 
-                    image.title = file.name; image.src = this.result; 
-                    preview.appendChild(image); 
-                }); 
-                reader.readAsDataURL(file); 
-            } 
-        } 
-        
-        document.getElementById('images').addEventListener('change', previewImages); 
+        const categoryId = document.getElementById('category_id').value;
+        const subcategorySelect = document.getElementById('subcategory_id');
 
-    </script> 
+        if (!categoryId) {
+            console.error("No category selected.");
+            return;
+        }
+
+        console.log("Category ID:", categoryId);
+        console.log("Fetch URL:", `/categories/${categoryId}/subcategories`);
+
+        subcategorySelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+        subcategorySelect.disabled = true;
+
+        fetch(`/categories/${categoryId}/subcategories`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Subcategories fetched:", data);
+
+                subcategorySelect.innerHTML = '<option value="" disabled selected>Select a subcategory</option>';
+                if (data.length === 0) {
+                    subcategorySelect.innerHTML = '<option value="" disabled selected>No subcategories available</option>';
+                } else {
+                    data.forEach(subcategory => {
+                        const option = document.createElement('option');
+                        option.value = subcategory.id;
+                        option.textContent = subcategory.name;
+                        subcategorySelect.appendChild(option);
+                    });
+                }
+                subcategorySelect.disabled = false;
+            })
+            .catch(error => {
+                console.error("Error fetching subcategories:", error);
+                subcategorySelect.innerHTML = '<option value="" disabled selected>Error loading subcategories. Try again.</option>';
+                subcategorySelect.disabled = false;
+            });
+    };
+
+    // Example of using MutationObserver instead of DOMSubtreeModified
+    const observer = new MutationObserver((mutationsList, observer) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                console.log('A child node has been added or removed.');
+            } else if (mutation.type === 'attributes') {
+                console.log('The ' + mutation.attributeName + ' attribute was modified.');
+            }
+        }
+    });
+
+    const targetNode = document.getElementById('category_id');
+    const config = { attributes: true, childList: true, subtree: true };
+
+    observer.observe(targetNode, config);
+
+    function previewImages() {
+        const preview = document.getElementById('imagePreview');
+        const input = document.getElementById('images');
+        preview.innerHTML = '';
+
+        if (input.files) {
+            Array.from(input.files).forEach(file => readAndPreview(file));
+        }
+
+        function readAndPreview(file) {
+            if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
+                return alert(file.name + " is not an image");
+            }
+
+            const reader = new FileReader();
+            reader.addEventListener("load", function () {
+                const image = new Image();
+                image.height = 100;
+                image.title = file.name;
+                image.src = reader.result;
+                image.classList.add('m-1', 'border', 'border-secondary', 'rounded');
+                preview.appendChild(image);
+            });
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Ensure previewImages function is available globally
+    window.previewImages = previewImages;
+</script>
+
+@section('scripts')
+    <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style> 
+        .modal-body .form-label { font-weight: bold; } 
+        .modal-body .form-control { border-radius: 0.25rem; } 
+        .modal-body .form-control-file { margin-top: 0.5rem; } 
+        #imagePreview img { margin: 5px; border: 1px solid #ddd; border-radius: 5px; padding: 5px; }
+    </style> 
 @endsection

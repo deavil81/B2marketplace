@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.navlayout')
 
 @section('content')
 <div class="container py-4">
@@ -32,6 +32,7 @@
             </div>
         </div>
         <div class="form-group mb-3">
+            
             <label for="price" class="form-label">Price</label>
             <input type="number" class="form-control" id="price" name="price" value="{{ $product->price }}" min="0" required>
         </div>
@@ -40,6 +41,12 @@
             <select class="form-control" id="category_id" name="category_id" required>
                 @foreach ($categories as $category)
                     <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                @endforeach
+            </select>
+            <label for="subcategory_id" class="form-label">Subcategory</label>
+            <select class="form-control" id="subcategory_id" name="subcategory_id" required>
+                @foreach ($subcategories as $subcategory)
+                    <option value="{{ $subcategory->id }}" {{ $product->subcategory_id == $subcategory->id ? 'selected' : '' }}>{{ $subcategory->name }}</option>
                 @endforeach
             </select>
         </div>

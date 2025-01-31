@@ -42,5 +42,31 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mt-4">
+            {{-- Role-Specific Section --}}
+            @if ($user->role === 'buyer')
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">My RFQs</h5>
+                            <p class="card-text">Create and manage your Requests for Quotations (RFQs).</p>
+                            <a href="{{ route('rfq.create') }}" class="btn btn-success">Create RFQ</a>
+                            <a href="{{ route('rfq.index') }}" class="btn btn-secondary">View My RFQs</a>
+                        </div>
+                    </div>
+                </div>
+            @elseif ($user->role === 'manufacturer')
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Available RFQs</h5>
+                            <p class="card-text">Browse and bid on RFQs from buyers.</p>
+                            <a href="{{ route('rfq.index') }}" class="btn btn-primary">View RFQs</a>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 @endsection

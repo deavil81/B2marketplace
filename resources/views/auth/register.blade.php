@@ -18,7 +18,7 @@
                 <input type="hidden" name="email" value="{{ $initialData['email'] ?? old('email') }}">
                 <input type="hidden" name="password" value="{{ $initialData['password'] ?? old('password') }}">
                 <input type="hidden" name="password_confirmation" value="{{ $initialData['password_confirmation'] ?? old('password_confirmation') }}">
-                <input type="hidden" name="role" value="{{ $initialData['role'] ?? old('role') }}">
+                <input type="hidden" name="role" id="role-input" value="{{ $initialData['role'] ?? old('role') }}">
 
                 <div class="form-group">
                     <label for="profile_picture">Profile Picture</label>
@@ -37,7 +37,26 @@
                     <textarea class="form-control" id="about_us" name="about_us" placeholder="Tell us about your company" rows="4" required>{{ old('about_us') }}</textarea>
                 </div>
 
-                <div class="form-group">
+                <!-- Role-Specific Fields -->
+                <div id="buyer-fields" style="display: none;">
+                    <h4>Buyer Information</h4>
+                    <div class="form-group">
+                        <label for="sourcing_needs">Sourcing Needs</label>
+                        <textarea class="form-control" id="sourcing_needs" name="sourcing_needs" placeholder="Describe your sourcing needs">{{ old('sourcing_needs') }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="budget">Budget</label>
+                        <input type="text" class="form-control" id="budget" name="budget" placeholder="Enter your budget">
+                    </div>
+                </div>
+
+                <div id="seller-fields" style="display: none;">
+                    <h4>Seller Information</h4>
+                    <div class="form-group">
+                        <label for="business_name">Business Name</label>
+                        <input type="text" class="form-control" id="business_name" name="business_name" placeholder="Business Name">
+                    </div>
+                    <div class="form-group">
                     <label for="business_type">Business Type</label>
                     <select class="form-control" id="business_type" name="business_type" required>
                         <option value="" disabled selected>Select Business Type</option>
@@ -65,6 +84,26 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="gst_number">GST Number</label>
+                    <input type="text" class="form-control" id="gst_number" name="gst_number" placeholder="Enter GST Number">
+                </div>
+
+                <div class="form-group">
+                    <label for="business_license">Business License</label>
+                    <input type="text" class="form-control" id="business_license" name="business_license" placeholder="Enter Business License">
+                </div>
+
+                <div class="form-group">
+                    <label for="catalog">Upload Catalog</label>
+                    <input type="file" class="form-control-file" id="catalog" name="catalog" accept=".pdf,.doc,.docx">
+                </div>
+
+                <div class="form-group">
+                    <label for="certificates">Upload Certificates</label>
+                    <input type="file" class="form-control-file" id="certificates" name="certificates[]" accept=".pdf,.jpg,.png" multiple>
+                </div>
+
                 <button type="submit" class="btn btn-register">Register</button>
             </form>
 
@@ -79,6 +118,29 @@
             @endif
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const role = document.getElementById('role-input').value;
+            toggleRoleSpecificFields(role);
+        });
+
+        function toggleRoleSpecificFields(role) {
+            const buyerFields = document.getElementById('buyer-fields');
+            const sellerFields = document.getElementById('seller-fields');
+
+            if (role === 'buyer') {
+                buyerFields.style.display = 'block';
+                sellerFields.style.display = 'none';
+            } else if (role === 'seller') {
+                sellerFields.style.display = 'block';
+                buyerFields.style.display = 'none';
+            } else {
+                buyerFields.style.display = 'none';
+                sellerFields.style.display = 'none';
+            }
+        }
+    </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
