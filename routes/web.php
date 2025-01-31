@@ -10,8 +10,12 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BuyerDashboardController;
+use App\Http\Controllers\SellerDashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\WebResetPasswordController;
+use App\Http\Controllers\SubcategoryController;
+use App\Http\Controllers\RFQController;
 
 // Homepage route
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -59,6 +63,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 // Detailed registration routes
 Route::get('/register/details', [AuthController::class, 'showDetailedRegistrationForm'])->name('register.details');
 Route::post('/register/details', [AuthController::class, 'storeDetailedRegistration'])->name('register.details.store');
+Route::get('/register/details', [AuthController::class, 'showDetailsForm'])->name('register.details');
 
 // Profile routes
 Route::middleware('auth')->prefix('profile')->name('profile.')->group(function () {
@@ -67,13 +72,15 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
     Route::put('/{id}', [HomeController::class, 'updateProfile'])->name('update'); // Update profile
     Route::post('/add-product', [HomeController::class, 'addProduct'])->name('addProduct'); // Add product
     Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
-
-});
+    Route::get('/buyer', [HomeController::class, 'Profile'])->name('buyer');});
 
 Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
 
 // Category routes
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('categories.show');
+Route::get('/subcategories/{id}', [SubcategoryController::class, 'show'])->name('subcategories.show');
+Route::get('/categories/{category}/subcategories', [CategoryController::class, 'getSubcategories']);
+
 
 // Product routes
 Route::middleware('auth')->prefix('products')->name('products.')->group(function () {
@@ -87,17 +94,52 @@ Route::middleware('auth')->prefix('products')->name('products.')->group(function
     Route::post('/{id}/review', [ProductController::class, 'storeReview'])->name('storeReview'); // Store review
 });
 
-// Dashboard and settings
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
+Route::post('/get-subcategories', [ProductController::class, 'getSubcategories'])->name('get.subcategories');
+Route::get('/rfqs/create', [RFQController::class, 'create'])->name('rfqs.create');
+
+
+//settings
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
     Route::get('/settings', [HomeController::class, 'settings'])->name('settings');
+    
 });
+// Dashboard routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/buyer/dashboard', [BuyerDashboardController::class, 'index'])->name('buyer.dashboard');
+    Route::get('/seller/dashboard', [SellerDashboardController::class, 'index'])->name('seller.dashboard');
+});
+
+// RFQ routes
+Route::middleware(['auth'])->prefix('rfqs')->name('rfqs.')->group(function () {
+    Route::get('/create', [RFQController::class, 'create'])->name('create');
+    Route::post('/', [RFQController::class, 'store'])->name('store');
+    Route::get('/', [RFQController::class, 'index'])->name('index');
+    Route::get('/{rfq}', [RFQController::class, 'show'])->name('show');
+    Route::post('/{rfq}/close', [RFQController::class, 'close'])->name('close');
+    Route::post('/{rfq}/open', [RFQController::class, 'open'])->name('open');
+    Route::get('/buyer-rfqs', [RFQController::class, 'authrfqs'])->name('authrfqs');
+});
+
+Route::middleware(['auth'])->prefix('rfqs')->name('rfqs.')->group(function () {
+    //Route::get('/list', [RFQController::class, 'list'])->name('list'); // New route for manufacturers
+    Route::post('/{rfq}/submit-proposal', [RFQController::class, 'submitProposal'])->name('submit.proposal');
+    Route::get('/rfqs/{rfq}/proposals', [RFQController::class, 'viewProposals'])->name('rfqs.proposals');
+
+});
+Route::middleware(['auth'])->prefix('manufacturers')->name('manufacturers.')->group(function () {
+    Route::get('/list', [RFQController::class, 'list'])->name('list'); 
+});
+
 
 // Other pages
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 
+//bid routes
+Route::get('/bids', [BidController::class, 'index'])->name('bids.index');
+
+
 // Fallback route for 404 errors
-Route::fallback(function () {
-    return view('errors.404');
-});
+
