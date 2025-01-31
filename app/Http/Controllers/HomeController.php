@@ -153,7 +153,7 @@ class HomeController extends Controller
     /**
      * Display the user's profile page.
      */
-    public function profile()
+    public function profile() 
     {
         $user = Auth::user();
     
@@ -161,11 +161,18 @@ class HomeController extends Controller
             return redirect()->route('login')->with('error', 'You must be logged in to access this page.');
         }
     
+        // Check the role of the user and redirect accordingly
+        if ($user->role === 'buyer') {
+            return view('auth.buyer-profile', compact('user'));
+        }
+    
+        // For sellers, include products and categories
         $products = Product::where('user_id', $user->id)->get();
         $categories = Category::all();
     
         return view('auth.profile', compact('user', 'products', 'categories'));
     }
+    
     
 
     public function editProfile()
@@ -259,9 +266,14 @@ class HomeController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
+        $loggedInUserId = auth()->id(); // Get the logged-in user's ID
+
         $products = Product::where('title', 'LIKE', "%$query%")->get();
-        $users = User::where('name', 'LIKE', "%$query%")->get();
+        $users = User::where('name', 'LIKE', "%$query%")
+                    ->where('id', '!=', $loggedInUserId) // Exclude the current user
+                    ->get();
 
         return view('search.results', compact('products', 'users', 'query'));
     }
+
 }

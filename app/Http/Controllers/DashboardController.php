@@ -4,14 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function show(): View
+    public function dashboard()
     {
         $user = Auth::user();
-
-        return view('auth.dashboard', compact('user'));
+    
+        if ($user->role === 'buyer') {
+            return redirect()->route('buyer.dashboard');
+        }
+    
+        if ($user->role === 'seller') {
+            return redirect()->route('seller.dashboard'); // Define seller.dashboard similarly
+        }
+    
+        return redirect('/'); // Default fallback
     }
+    
 }

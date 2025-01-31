@@ -94,20 +94,25 @@ class MessageController extends Controller
             'receiver_id' => 'required|exists:users,id',
             'content' => 'nullable|string|max:1000',
         ]);
-
+    
         $senderId = auth()->id();
         $receiverId = $request->receiver_id;
-
+    
+        // Prevent users from starting a conversation with themselves
+        if ($senderId === $receiverId) {
+            return redirect()->route('messages.index')->withErrors('You cannot start a conversation with yourself.');
+        }
+    
         $user1Id = min($senderId, $receiverId);
         $user2Id = max($senderId, $receiverId);
-
+    
         $conversation = Conversation::firstOrCreate(
             [
                 'user1_id' => $user1Id,
                 'user2_id' => $user2Id,
             ]
         );
-
+    
         if ($request->filled('content')) {
             $conversation->messages()->create([
                 'sender_id' => $senderId,
@@ -115,7 +120,7 @@ class MessageController extends Controller
                 'content' => htmlspecialchars($request->content, ENT_QUOTES, 'UTF-8'),
             ]);
         }
-
+    
         return redirect()->route('messages.index', ['user_id' => $receiverId]);
     }
 }

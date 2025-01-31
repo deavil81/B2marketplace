@@ -9,15 +9,30 @@ class Category extends Model
 {
     use HasFactory;
 
-    // Specify the table name (optional if it matches the model name in plural)
     protected $table = 'categories';
 
-    // Specify the fillable fields
-    protected $fillable = ['name', 'image'];
+    protected $fillable = ['name', 'image', 'parent_id'];
 
-    // Define the relationship with the Product model
-    public function products()
+    // Self-referencing relationship for children
+    public function children()
     {
-        return $this->hasMany(Product::class, 'category_id');
+        return $this->hasMany(Category::class, 'parent_id');
     }
+
+    // Self-referencing relationship for parent
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+    public function subcategories()
+    {
+        return $this->hasMany(Subcategory::class,);
+    }
+
+    public function rfqs()
+    {
+        return $this->hasMany(RFQ::class, 'category_id');
+    }
+
+
 }

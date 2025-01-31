@@ -54,6 +54,18 @@ class User extends Authenticatable
         $this->save();
     }
 
+    public function buyer()
+    {
+        return $this->hasOne(Buyer::class, 'user_id');    
+    }
+    
+    public function seller()
+    {
+        return $this->hasOne(Seller::class);
+    }
+    
+
+
     /**
      * Get messages sent by the user.
      */
@@ -68,6 +80,11 @@ class User extends Authenticatable
     public function receivedMessages(): HasMany
     {
         return $this->hasMany(Message::class, 'receiver_id');
+    }
+
+    public function rfqs(): HasMany
+    {
+        return $this->hasMany(RFQ::class);
     }
 
    
